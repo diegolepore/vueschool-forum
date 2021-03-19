@@ -1,20 +1,21 @@
 <template>
+  <TheNavbar />
   <div class="container">
-    <page-home/>
+    <router-view/>
   </div>
 </template>
 
 <script>
-import PageHome from '@/components/PageHome.vue'
+import TheNavbar from '@/components/TheNavbar.vue'
 
 export default {
   name: 'App',
   components: {
-    PageHome
+    TheNavbar
   }
 }
 </script>
 
 <style>
-@import 'assets/style.css'
+@import 'assets/style.css';
 </style>
