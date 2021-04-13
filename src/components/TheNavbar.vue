@@ -15,21 +15,21 @@
     <nav class="navbar">
       <ul>
         <li class="navbar-user">
-          <a href="#">
+          <router-link :to="{ name: 'UserProfile' }">
             <img
               class="avatar-small"
-              src="https://pbs.twimg.com/profile_images/1188775562657091594/5mgkg44t_400x400.jpg"
-              alt=""
+              :src="authUser.avatar"
+              :alt="`${authUser.name} profile picture`"
             />
             <span>
-              Alex Kyriakidis
+              {{ authUser.name }}
               <img
                 class="icon-profile"
                 src="../assets/img/svg/arrow-profile.svg"
                 alt=""
               />
             </span>
-          </a>
+          </router-link>
 
           <!-- dropdown menu -->
           <!-- add class "active-drop" to show the dropdown -->
@@ -71,7 +71,16 @@
 </template>
 
 <script>
-export default {}
+import { mapGetters } from 'vuex'
+
+export default {
+  name: 'TheNavbar',
+  computed: {
+    ...mapGetters([
+      'authUser'
+    ])
+  }
+}
 </script>
 
 <style scoped>

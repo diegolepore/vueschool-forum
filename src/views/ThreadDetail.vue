@@ -1,6 +1,9 @@
 <template>
   <div class="col-large push-top">
-    <h1>{{ thread.title }}</h1>
+    <h1>
+      {{ thread.title }}
+      <router-link :to="{ name: 'ThreadUpdate', params: { threadId: thread.id } }" class="btn-green btn-small">Edit thread</router-link>
+    </h1>
 
     <p>
       By <a href="#" class="link-unstyled">{{ userById(thread.userId).name }}</a

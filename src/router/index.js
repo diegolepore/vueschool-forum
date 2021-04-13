@@ -3,6 +3,9 @@ import ThreadDetail from '@/views/ThreadDetail.vue'
 import NotFound from '@/views/NotFound.vue'
 import ForumDetail from '@/views/ForumDetail.vue'
 import CategoryDetail from '@/views/CategoryDetail.vue'
+import UserProfile from '@/views/UserProfile.vue'
+import ThreadCreate from '@/views/ThreadCreate.vue'
+import ThreadUpdate from '@/views/ThreadUpdate.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import store from '@/store'
 
@@ -11,6 +14,18 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home
+  },
+  {
+    path: '/me',
+    name: 'UserProfile',
+    component: UserProfile,
+    meta: { toTop: true, smoothScroll: true }
+  },
+  {
+    path: '/me/edit',
+    name: 'UserProfileEdit',
+    component: UserProfile,
+    props: { edit: true }
   },
   {
     path: '/category/:id',
@@ -22,6 +37,18 @@ const routes = [
     path: '/forum/:id',
     name: 'ForumDetail',
     component: ForumDetail,
+    props: true
+  },
+  {
+    path: '/forum/:forumId/thread/create',
+    name: 'ThreadCreate',
+    component: ThreadCreate,
+    props: true
+  },
+  {
+    path: '/thread/:threadId/edit',
+    name: 'ThreadUpdate',
+    component: ThreadUpdate,
     props: true
   },
   {
@@ -57,7 +84,14 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+  scrollBehavior (to) {
+    const scroll = {}
+    if (to.meta.toTop) scroll.top = 0
+    if (to.meta.smoothScroll) scroll.behavior = 'smooth'
+
+    return scroll
+  }
 })
 
 export default router
