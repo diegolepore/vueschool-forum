@@ -15,11 +15,11 @@
           </a>
 
           <p class="desktop-only text-small">
-            {{ postsByUser(post.userId).length }} posts
+            {{ userById(post.userId).postsCount }} posts
           </p>
 
           <p class="desktop-only text-small">
-            {{threadsByUser(post.userId).length }}threads
+            {{ userById(post.userId).threadsCount }} threads
           </p>
 
           <span class="online desktop-only">online</span>
@@ -67,13 +67,7 @@ export default {
   },
   methods: {
     userById (userId) {
-      return this.users.find((user) => user.id === userId)
-    },
-    postsByUser (userId) {
-      return this.posts.filter((post) => post.userId === userId)
-    },
-    threadsByUser (userId) {
-      return this.threads.filter((thread) => thread.userId === userId)
+      return this.$store.getters.user(userId)
     }
   }
 }

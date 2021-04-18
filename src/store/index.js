@@ -8,28 +8,52 @@ export default createStore({
     authId: 'VXjpr2WHa8Ux4Bnggym8QFLdv5C3'
   },
   getters: {
-    authUser: state => {
-      const user = findById(state.users, state.authId)
+    authUser: (state, getters) => {
+      return getters.user(state.authId)
+    },
 
-      if (!user) return null
+    user: state => {
+      return (id) => {
+        const user = findById(state.users, id)
 
-      return {
-        ...user,
+        if (!user) return null
 
-        get posts () {
-          return state.posts.filter(post => post.userId === user.id)
-        },
+        return {
+          ...user,
 
-        get postsCount () {
-          return this.posts.length
-        },
+          get posts () {
+            return state.posts.filter(post => post.userId === user.id)
+          },
 
-        get threads () {
-          return state.threads.filter(thread => thread.userId === user.id)
-        },
+          get postsCount () {
+            return this.posts.length
+          },
 
-        get threadsCount () {
-          return this.threads.length
+          get threads () {
+            return state.threads.filter(thread => thread.userId === user.id)
+          },
+
+          get threadsCount () {
+            return this.threads.length
+          }
+        }
+      }
+    },
+
+    thread: state => {
+      return (id) => {
+        const thread = findById(state.threads, id)
+        return {
+          ...thread,
+          get author () {
+            return findById(state.users, thread.userId)
+          },
+          get repliesCount () {
+            return thread.posts.length - 1
+          },
+          get contributorsCount () {
+            return thread.contributors.length
+          }
         }
       }
     }
@@ -48,28 +72,18 @@ export default createStore({
     //   state.posts[postIndex] = { ...state.posts[postIndex], text }
     // },
 
-    setPostIdToThread (state, { postId, threadId }) {
-      const thread = findById(state.threads, threadId)
-      thread.posts = thread.posts || []
-      thread.posts.push(postId)
-    },
-
     // setFirstPostIdToThread (state, { postId, threadId }) {
     //   const thread = findById(state.threads, threadId)
     //   thread.firstPostId = postId
     // },
 
-    setThreadIdToForum (state, { threadId, forumId }) {
-      const forum = findById(state.forums, forumId)
-      forum.threads = forum.threads || []
-      forum.threads.push(threadId)
-    },
+    setPostIdToThread: makeAppendChildToParentMutation({ parent: 'threads', child: 'posts' }),
 
-    setThreadIdToUser (state, { threadId, userId }) {
-      const user = findById(state.users, userId)
-      user.threads = user.threads || []
-      user.threads.push(threadId)
-    },
+    setThreadIdToForum: makeAppendChildToParentMutation({ parent: 'forums', child: 'threads' }),
+
+    setThreadIdToUser: makeAppendChildToParentMutation({ parent: 'users', child: 'threads' }),
+
+    setContributorIdToThread: makeAppendChildToParentMutation({ parent: 'threads', child: 'contributors' }),
 
     setUpdateUserData (state, payload) {
       const userIndex = state.users.findIndex(user => user.id === state.authId)
@@ -92,7 +106,8 @@ export default createStore({
         publishedAt: Math.floor(Date.now() / 1000)
       }
       commit('setPost', { post })
-      commit('setPostIdToThread', { postId: post.id, threadId: post.threadId })
+      commit('setPostIdToThread', { childId: post.id, parentId: post.threadId })
+      commit('setContributorIdToThread', { childId: state.authId, parentId: post.threadId })
 
       // if (payload.isCreatingThread) {
       //   commit('setFirstPostIdToThread', { postId: post.id, threadId: post.threadId })
@@ -132,8 +147,8 @@ export default createStore({
 
       commit('setThread', { thread })
       dispatch('createPost', { text, threadId: id, isCreatingThread: true })
-      commit('setThreadIdToForum', { threadId: id, forumId })
-      commit('setThreadIdToUser', { threadId: id, userId })
+      commit('setThreadIdToForum', { childId: id, parentId: forumId })
+      commit('setThreadIdToUser', { childId: id, parentId: userId })
 
       return findById(state.threads, id)
     }
@@ -141,3 +156,13 @@ export default createStore({
   modules: {
   }
 })
+
+function makeAppendChildToParentMutation ({ parent, child }) {
+  return (state, { parentId, childId }) => {
+    const resource = findById(state[parent], parentId)
+    resource[child] = resource[child] || []
+    if (!resource[child].includes(childId)) {
+      resource[child].push(childId)
+    }
+  }
+}

@@ -6,14 +6,14 @@
     </h1>
 
     <p>
-      By <a href="#" class="link-unstyled">{{ userById(thread.userId).name }}</a
-      >, 2 hours ago.
+      By <a href="#" class="link-unstyled">{{ thread.author.name }}</a
+      >, <base-date :timestamp="thread.publishedAt" />
       <span
         style="float: right; margin-top: 2px"
         class="hide-mobile text-faded text-small"
         v-if="thread.posts && thread.contributors"
-        >{{ thread.posts.length }} replies by
-        {{ thread.contributors.length }} contributors</span
+        >{{ thread.repliesCount }} replies by
+        {{ thread.contributorsCount }} contributors</span
       >
     </p>
 
@@ -49,7 +49,8 @@ export default {
     ]),
 
     thread () {
-      return this.threads.find((thread) => thread.id === this.id)
+      console.log(this.$store.getters.thread(this.id))
+      return this.$store.getters.thread(this.id)
     },
 
     threadPosts () {
@@ -61,9 +62,6 @@ export default {
       'createPost'
     ]),
 
-    userById (userId) {
-      return this.users.find((user) => user.id === userId)
-    },
     addPost (eventData) {
       const post = {
         ...eventData.newPost,

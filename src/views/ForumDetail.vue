@@ -2,7 +2,7 @@
   <div class="col-full push-top">
       <div class="forum-header">
           <div class="forum-details">
-              <h1>{{ forum.name }}</h1>
+              <h1>{{ forum.name }} </h1>
               <p class="text-lead">{{ forum.description }}</p>
           </div>
           <router-link :to="{ name: 'ThreadCreate', params: { forumId: forum.id } }" class="btn-green btn-small">Start a thread</router-link>
@@ -40,7 +40,7 @@ export default {
     },
 
     filteredThreads () {
-      return this.threads.filter((thread) => thread.forumId === this.id)
+      return this.forum.threads.map((threadId) => this.$store.getters.thread(threadId))
     }
   }
 }

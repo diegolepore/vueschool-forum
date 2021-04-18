@@ -15,7 +15,7 @@
         </div>
 
         <div class="activity">
-          <p class="replies-count">{{ repliesLength(thread) }}</p>
+          <p class="replies-count">{{ thread.repliesCount }} replies </p>
 
           <img
             class="avatar-medium"
@@ -61,10 +61,6 @@ export default {
     },
     userById (userId) {
       return this.users.find((user) => user.id === userId)
-    },
-    repliesLength (thread) {
-      const threadPostsLength = thread.posts.length
-      return `${threadPostsLength} ${threadPostsLength > 1 ? 'replies' : 'reply'}`
     }
   }
 }
